@@ -1,0 +1,22 @@
+{
+    "reg":{
+        "path":"/reg",
+        "method":"POST"
+    },
+    "login":{
+        "path":"/login",
+        "method":"POST"
+    },
+    "friends":{
+        "path":"/friends",
+        "method":"POST"
+    },
+    "profile":{
+        "path":"/profile",
+        "method":"GET"
+    },
+    "test":{
+        "path":"/test",
+        "method":"POST"
+    }
+}
