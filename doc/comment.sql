@@ -2,16 +2,13 @@
 
 --用户
 ----注册,
-insert into user (uid, uname, password, issu, phonenum, email)
-  values (_phonenum, _uname, _password, 0, _phonenum, _email);
+insert into user (uid, uname, password, issu)
+  values (_phonenum, _uname, _password, 0);
 --站内信
-----新建建立id序列
-CREATE SEQUENCE mailid_sequence increment by 1
-  start with 1 nomaxvalue NOCYCLE;
 ----发送
-insert into mail (mailid, fromuid, touid, issend,
+insert into mail (fromuid, touid, issend,
    issrecv, time, content, attachment, isfromdel, istodel)
-  values (mailid_sequence.NEXTVAL, _fromuid, _touid, 1,
+  values (_fromuid, _touid, 1,
    0, _time, _content, _attachment, 0, 0);
 ----接收未查看
 select * from mail
@@ -50,42 +47,29 @@ select * from mail
   order by time desc;
 
 --公告
-----新建建立id序列
-CREATE SEQUENCE postid_sequence increment by 1
-  start with 1 nomaxvalue NOCYCLE;
 ----新建公告
-insert into post (postid, uid, title, range, starttime,
-    endtime, content, attachment)
-  values (postid_sequence.NEXTVAL, _uid, _title, _range, _starttime
-    _endtime, _content, _attachment);
+insert into post (uid, title, starttime, endtime, content)
+  values (_uid, _title, _starttime, _endtime, _content,);
 ------发送公告通知，请在本地下载全部用户使用循环逐条发送
-insert into mail (mailid, fromuid, touid, issend,
-    issrecv, time, content, attachment, isfromdel, istodel)
-  values (mailid_sequence.NEXTVAL, _fromuid, _touid, 1,
-    0, _time, _content, _attachment, 0, 0);
+insert into mail (fromuid, touid, issend,
+    issrecv, time, content, isfromdel, istodel)
+  values (_fromuid, _touid, 1,
+    0, _time, _content, 0, 0);
 ----显示公告
 select * from post order by endtime desc;
 
 --新闻
 ----新闻类别
-------新建建立id序列
-CREATE SEQUENCE newstypeid_sequence increment by 1
-  start with 1 nomaxvalue NOCYCLE;
 ------新建新闻类别
-insert into newstype (typei d, typename)
-  values (newstypeid_sequence, _typename);
+insert into newstype (typename)
+  values (_typename);
 ------获取新闻类别
 select * from newstype
   where typename = _typename;
 ----新闻正文
-------新建建立id序列
-CREATE SEQUENCE newsid_sequence increment by 1
-  start with 1 nomaxvalue NOCYCLE;
 ------发布新闻
-insert into news (newsid, typeid, uid, title,
-   image, content, comment)
-  values (newsid_sequence.NEXTVAL, _typeid, _uid, _title,
-   _image, _content, _comment);
+insert into news (typeid, uid, title, content, comment)
+  values (_typeid, _uid, _title, _content, _comment);
 ------显示全部新闻
 select * from news order by newsid desc;
 ------显示某一类别新闻
@@ -93,8 +77,7 @@ select * from news
   where typeid = _typeid
   order by newsid desc;
 ------修改新闻
-update news set title = _title, image = _image,
-   content = _connect, comment = _comment
+update news set title = _title, content = _connect
   where newsid = _newsid;
 ------删除新闻
 delete from comment
@@ -103,28 +86,19 @@ delete from comment
 delete from news
   where newsid = _newsid;
 ----评论
-------新建建立id序列
-CREATE SEQUENCE commentid_sequence increment by 1
-  start with 1 nomaxvalue NOCYCLE;
 ------发布评论
-insert into comment (commentid, newsid, uid, content)
-  values (commentid_sequence.NEXTVAL, _newsid, _uid, _content);
+insert into comment (newsid, uid, content)
+  values (_newsid, _uid, _content);
 ------删除评论
 delete from comment
   where commentid = _commentid;
 
 --文档
-----新建建立id序列
-CREATE SEQUENCE docid_sequence increment by 1
-  start with 1 nomaxvalue NOCYCLE;
 ----新建文档
-insert into doc (docid, uid, title, content,
-   attachment, altername)
-  values (docid_sequence.NEXTVAL, _uid, title, content,
-   _attachment, _altername);
+insert into doc (uid, title, content, altertime)
+  values (_uid, title, content, _altertime);
 ----编辑文档
-update doc set title = _title, content = _connect,
-   attachment = _attachment, altername = _altername
+update doc set title = _title, content = _connect, altertime = _altertime
   where docid = _docid;
 ----删除文档
 delete from doc where docid = _docid;
@@ -136,12 +110,9 @@ select * from doc
 
 --通讯录
 ----联系人分组
-------新建建立id序列
-CREATE SEQUENCE groupid_sequence increment by 1
-  start with 1 nomaxvalue NOCYCLE;
 ------新建联系人分组
-insert into contactgroup (groupid, groupname)
-  values (groupid_sequence.NEXTVAL, _groupname);
+insert into contactgroup (groupname)
+  values (_groupname);
 ----联系人信息
 ------新建联系人分组信息
 insert into contact (uid, groupid)
@@ -150,13 +121,13 @@ insert into contact (uid, groupid)
 update contact set groupid = _groupid
   where uid = _uid;
 ------查询所有联系人信息
-select uname, phonenum, email from contact, users
+select uname, uid from contact, users
   where contact.uid = users.uid;
 ------查询某一分组联系人信息
-select uname, phonenum, email from contact, users
+select uname, uid from contact, users
   where contact.uid = users.id and groupid = _groupid;
 ------按姓名查找联系人信息
-select uname, phonenum, email from contact, users
+select uname, uid from contact, users
   where contact.uid = users.uid and uname like "%_uname%";
 ------删除联系人信息
 delete from contact
